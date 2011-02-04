@@ -1,88 +1,10 @@
-You need a name_of_yor_gem.rb file with correct require if you want easy including of your gem 
+This is a in Progress Work ....
+
+You will find here a solution that extends Single Table Inheritance & Class Table Inheritance.
+
+This solution is based on classical class inheritance as well as DB views.
 
 
 
 
-  #---------------------------------------------------------------------------------------------------
-  #
-  #           NON mother_class
-  #
-  #---------------------------------------------------------------------------------------------------
-
-
-    def acts_as_cvi_non_mother_class(options = {}) 
-
-      puts "acts_as_cvi_non_mother_class---->class=#{self.name}"
-
-      db_type_field = (options[:db_type_field] || :type).to_s 
-      table_name = (options[:table_name] || self.name.tableize).to_s
-
-      set_inheritance_column "#{db_type_field}"
-
-      set_table_name "view_#{table_name}"
-      aaa=create_class_part_of self# these 2 lines are there for the
-      self.const_set("PartOf",aaa) #creation of class PartOf (which is a class of the current class)
-    end
-
-
-
-  #---------------------------------------------------------------------------------------------------
-  #
-  #           mother_class
-  #
-  #---------------------------------------------------------------------------------------------------
-
-  def acts_as_cvi_mother_class(options = {}) 
-
-      puts "acts_as_cvi_mother_class---->class=#{self.name}"
-      db_type_field = (options[:db_type_field] || :type).to_s
-      table_name = (options[:table_name] || self.name.tableize).to_s
-
-      set_inheritance_column "#{db_type_field}"
-      set_table="#{table_name}"
-
-
-      def mother_class #give the mother class : the highest inherited class after ActiveRecord 
-       if(self.superclass!=ActiveRecord::Base) 
-          self.superclass.mother_class
-        else
-        return self 
-        end
-      end 
-
-
-      def find(*args) #override find to get more informations        
-        tuples = super
-        return tuples if tuples.kind_of?(Array) # in case of several tuples just return the tuples as they are
-        #tuples.reload2                         # reload2 is defined in lib/activerecord_ext.rb
-        tuples.class.where(tuples.class[:id].eq(tuples.id))[0]  # in case of only one tuple return a reloaded tuple  based on the class of this tuple
-                                                                # this imply a "full" load of the tuple
-                                                                # AVOIR AVEC LB peut être préfère t il laisser reload2                                                        
-      end
-
-
-      def delete(id) #override delete to delete every pieces of information bout this record wherever it may be stored
-        puts "delete de classe = #{self.name}"
-         return super if self == self.mother_class #if the class of the record is the mother class then call with the id of the object
-
-                                                        #if the class of the record is not the mother class then 
-
-         if self.respond_to?('has_a_part_of') # eventually delete pieces of information stored in the table associated to the class of the object (if there is such a table)
-          self::PartOf.delete(id)  if self.has_a_part_of?  
-         end
-         self.superclass.delete(id)                     # call the delete method associated to the super class of the current class with the id the object
-      end  #A AMELIORER
-
-
-      def delete_all
-       # implementation plus rapide que un par un ? A MODIFIER
-       self.all.each{|o| o.delete } #call delete method fo each object of the class
-      end
-
-      send :include, InstanceMethods     
-
-    end
-  end
-
-
-
+This work is done @ altrabio. See us @ http://wwww.altrabio.com
