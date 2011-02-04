@@ -24,16 +24,16 @@ module Cvi
 
         
         
-        db_type_field = (options[:db_type_field] || :type).to_s
-        table_name = (options[:table_name] || self.name.tableize).to_s
+        db_type_field = (options[:db_type_field] || :type).to_s         #:db_type_field = option for setting the inheritance columns, default value = 'type'
+        table_name = (options[:table_name] || self.name.tableize).to_s  #:table_name = option for setting the name of the current class table_name, default value = 'tableized(current class name)'
 
         set_inheritance_column "#{db_type_field}"
 
         if(self.superclass!=ActiveRecord::Base)
           puts "acts_as_cvi -> NON mother class"
           set_table_name "view_#{table_name}"
-          aaa=create_class_part_of self# these 2 lines are there for the
-          self.const_set("PartOf",aaa) #creation of class PartOf (which is a class of the current class)
+          aaa=create_class_part_of self# these 2 lines are there for the creation of class PartOf (which is a class of the current class)
+          self.const_set("PartOf",aaa) # it will stand for the self table of the current class
           set_table="#{table_name}"
         else
           puts "acts_as_cvi -> MOTHER class"
