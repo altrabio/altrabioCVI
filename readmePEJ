@@ -1,3 +1,7 @@
+
+
+Description 
+------------
 This is a in Work in Progress !
 Currently no documentation & tests, use it at your own risk...
 
@@ -7,5 +11,135 @@ This solution is based on classical class inheritance as well as DB views.
 
 
 
+This work is done @ altrabio. Find us @ http://wwww.altrabio.com
 
-This work is done @ altrabio. See us @ http://wwww.altrabio.com
+
+
+How to use (now for L. Buffat exclusively, but later for everyone)
+------------------------------------------------------------------
+
+1. just add acts_as_cvi  in your class declaration (for classes with a "self table", do nothing for other classes)
+some examples :
+
+class Product < ActiveRecord::Base
+  acts_as_cvi
+end
+
+
+
+class Book < Product
+  
+  acts_as_cvi
+  
+end
+
+
+
+class Dictionary < Book
+ 
+ acts_as_cvi
+
+end
+
+
+class PocketDictionary < Dictionary
+  
+end
+
+class PocketDictionary < Dictionary
+   
+end
+
+
+class Unknown < Product
+  
+#  acts_as_cvi_non_mother_class :no_self_table=>true USELESS due to class inheritance
+  
+end
+
+
+
+2. some examples of Migrations
+
+class CreateProducts < ActiveRecord::Migration
+  def self.up
+    create_table :products do |t|
+      t.string :type # TO ADD
+      t.string :name
+      t.integer :price
+
+      t.timestamps
+    end
+  end
+
+  def self.down
+    drop_table :products
+  end
+end
+
+class CreateBooks < ActiveRecord::Migration
+  def self.up
+    create_table :books do |t|
+      t.string :title
+      t.string :author
+
+     # t.timestamps TO DELETE
+    end
+    
+    self.CreateTheViewForCVI(Book)
+  end
+
+  def self.down
+    self.DropTheViewForCVI(Book)
+    drop_table :books
+  end
+end
+
+class CreateDictionaries < ActiveRecord::Migration
+  def self.up
+    create_table :dictionaries do |t|
+      t.string :lf
+      t.string :lt
+
+      #t.timestamps TO DELETE
+    end
+  self.CreateTheViewForCVI(Dictionary)
+  end
+
+  def self.down
+    self.DropTheViewForCVI(Dictionary)
+    drop_table :dictionaries
+  end
+end
+
+
+class CreatePocketDictionaries < ActiveRecord::Migration
+  def self.up
+    # EVERYTHING SHOULD BE DELETED
+    #create_table :pocket_dictionaries do |t|
+
+    #  t.timestamps
+    #end
+  end
+
+  def self.down
+    #drop_table :pocket_dictionaries
+  end
+end
+
+
+class CreateUnknowns < ActiveRecord::Migration
+  def self.up
+    # EVERYTHING SHOULD BE DELETED
+    #create_table :unknowns do |t|
+
+     # t.timestamps
+    #end
+  end
+
+  def self.down
+    #drop_table :unknowns
+  end
+end
+
+
