@@ -7,7 +7,7 @@ Currently no documentation & tests, use it at your own risk...
 
 You will find here a solution that extends Single Table Inheritance & Class Table Inheritance.
 
-This solution is based on classical class inheritance as well as DB views.
+This solution is based on classical class inheritance, single table inheritance as well as DB views.
 
 
 
