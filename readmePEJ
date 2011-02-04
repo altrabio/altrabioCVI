@@ -20,11 +20,18 @@ How to use (now for L. Buffat exclusively, but later for everyone)
 
 0. Install gem with : gem install altrabioCVI
 
-1. just add acts_as_cvi  in your class declaration (for classes with a "self table", do nothing for other classes)
+1. just add 
+			acts_as_cvi  
+			
+			in your class declaration (for classes with a "self table", do nothing for other classes)
 
-you may include two options : acts_as_cvi:db_type_field => 'a_value1',:table_name    => 'a_value2'
+you may include two options : 
+
+acts_as_cvi:db_type_field => 'a_value1',:table_name    => 'a_value2'
+
 		:db_type_field => 'a_value1' = option for setting the inheritance columns of the class, default value = 'type'
         :table_name    => 'a_value2' = option for setting the name of the class table_name, default value = 'tableized( class name)'
+
 
 
 some examples :
