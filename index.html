@@ -56,164 +56,165 @@
 
     <p>main project text</p>
 
-Description 
-------------
-This is a Work in Progress !
-Currently no documentation & tests, use it at your own risk...
+Description <br/>
+------------<br/>
+This is a Work in Progress !<br/>
+Currently no documentation & tests, use it at your own risk...<br/>
 
-You will find here a solution that extends Single Table Inheritance & Class Table Inheritance.
+You will find here a solution that extends Single Table Inheritance & Class Table Inheritance.<br/>
 
-This solution is based on classical class inheritance, single table inheritance as well as DB views.
-
-
-
-This work is done @ altrabio. Find us @ http://wwww.altrabio.com
+This solution is based on classical class inheritance, single table inheritance as well as DB views.<br/>
 
 
 
-How to use (now for L. Buffat exclusively, but later for everyone)
-------------------------------------------------------------------
-
-0. Install gem with : gem install altrabioCVI
-
-1. just add 
-			acts_as_cvi  
-
-			in your class declaration (for classes with a "self table", do nothing for other classes)
-
-you may include two options : 
-
-acts_as_cvi:db_type_field => 'a_value1',:table_name    => 'a_value2'
-
-		:db_type_field => 'a_value1' = option for setting the inheritance columns of the class, default value = 'type'
-        :table_name    => 'a_value2' = option for setting the name of the class table_name, default value = 'tableized( class name)'
+This work is done @ altrabio. Find us @ http://wwww.altrabio.com<br/>
 
 
 
-some examples :
+How to use (now for L. Buffat exclusively, but later for everyone)<br/>
+------------------------------------------------------------------<br/>
+<br/>
+0. Install gem with : gem install altrabioCVI<br/>
+<br/>
+1. just add<br/> 
+			acts_as_cvi<br/>  
 
-class Product < ActiveRecord::Base
-  acts_as_cvi
-end
+			in your class declaration (for classes with a "self table", do nothing for other classes)<br/>
 
+you may include two options : <br/>
 
+acts_as_cvi:db_type_field => 'a_value1',:table_name    => 'a_value2'<br/>
 
-class Book < Product
+		:db_type_field => 'a_value1' = option for setting the inheritance columns of the class, default value = 'type'<br/>
+        :table_name    => 'a_value2' = option for setting the name of the class table_name, default value = 'tableized( class name)'<br/>
+
+<br/>
+<br/>
+some examples :<br/>
+<br/>
+class Product < ActiveRecord::Base<br/>
+  acts_as_cvi<br/>
+end<br/>
+
+<br/>
+<br/>
+class Book < Product<br/>
   
-  acts_as_cvi
+  acts_as_cvi<br/>
   
-end
+end<br/>
 
-
-
-class Dictionary < Book
+<br/>
+<br/>
+class Dictionary < Book<br/>
  
- acts_as_cvi
+ acts_as_cvi<br/>
 
-end
-
-
+end<br/>
+<br/>
+<br/>
 class PocketDictionary < Dictionary
-  
-end
-
-class PocketDictionary < Dictionary
+<br/>  
+end<br/>
+<br/>
+<br/>
+class PocketDictionary < Dictionary<br/>
    
-end
+end<br/>
 
 
-class Unknown < Product
+class Unknown < Product<br/>
   
-end
+end<br/>
+<br/>
+<br/>
+<br/>
+2. Migrations <br/>
+<br/>
+some examples of Migrations<br/>
+<br/>
+class CreateProducts < ActiveRecord::Migration<br/>
+  def self.up<br/>
+    create_table :products do |t|<br/>
+      t.string :type # TO ADD<br/>
+      t.string :name<br/>
+      t.integer :price<br/>
+<br/>
+      t.timestamps<br/>
+    end<br/>
+  end<br/>
+<br/>
+  def self.down<br/>
+    drop_table :products<br/>
+  end<br/>
+end<br/>
+<br/><br/>
+class CreateBooks < ActiveRecord::Migration<br/>
+  def self.up<br/>
+    create_table :books do |t|<br/>
+      t.string :title<br/>
+      t.string :author<br/>
 
+     # t.timestamps TO DELETE<br/>
+    end<br/>
+    <br/>
+    self.CreateTheViewForCVI(Book)<br/>
+  end<br/>
+<br/>
+  def self.d<br/>own
+    self.DropTheViewForCVI(Book)<br/>
+    drop_table :books<br/>
+  end<br/>
+end<br/>
+<br/>
+class CreateDictionaries < ActiveRecord::Migration<br/>
+  def self.up<br/>
+    create_table :dictionaries do |t|<br/>
+      t.string :lf<br/>
+      t.string :lt<br/>
 
-
-2. Migrations 
-
-some examples of Migrations
-
-class CreateProducts < ActiveRecord::Migration
-  def self.up
-    create_table :products do |t|
-      t.string :type # TO ADD
-      t.string :name
-      t.integer :price
-
-      t.timestamps
-    end
-  end
-
-  def self.down
-    drop_table :products
-  end
-end
-
-class CreateBooks < ActiveRecord::Migration
-  def self.up
-    create_table :books do |t|
-      t.string :title
-      t.string :author
-
-     # t.timestamps TO DELETE
-    end
-    
-    self.CreateTheViewForCVI(Book)
-  end
-
-  def self.down
-    self.DropTheViewForCVI(Book)
-    drop_table :books
-  end
-end
-
-class CreateDictionaries < ActiveRecord::Migration
-  def self.up
-    create_table :dictionaries do |t|
-      t.string :lf
-      t.string :lt
-
-      #t.timestamps TO DELETE
-    end
-  self.CreateTheViewForCVI(Dictionary)
-  end
-
-  def self.down
-    self.DropTheViewForCVI(Dictionary)
-    drop_table :dictionaries
-  end
-end
-
-
-class CreatePocketDictionaries < ActiveRecord::Migration
-  def self.up
-    # EVERYTHING SHOULD BE DELETED
-    #create_table :pocket_dictionaries do |t|
-
-    #  t.timestamps
-    #end
-  end
-
-  def self.down
-    #drop_table :pocket_dictionaries
-  end
-end
-
-
-class CreateUnknowns < ActiveRecord::Migration
-  def self.up
-    # EVERYTHING SHOULD BE DELETED
-    #create_table :unknowns do |t|
-
-     # t.timestamps
-    #end
-  end
-
-  def self.down
-    #drop_table :unknowns
-  end
-end
-
-
+      #t.timestamps TO DELETE<br/>
+    end<br/>
+  self.CreateTheViewForCVI(Dictionary)<br/>
+  end<br/>
+<br/>
+  def self.down<br/>
+    self.DropTheViewForCVI(Dictionary)<br/>
+    drop_table :dictionaries<br/>
+  end<br/>
+end<br/>
+<br/>
+<br/>
+class CreatePocketDictionaries < ActiveRecord::Migration<br/>
+  def self.up<br/>
+    # EVERYTHING SHOULD BE DELETED<br/>
+    #create_table :pocket_dictionaries do |t|<br/>
+<br/>
+    #  t.timestamps<br/>
+    #end<br/>
+  end<br/>
+<br/>
+  def self.down<br/>
+    #drop_table :pocket_dictionaries<br/>
+  end<br/>
+end<br/>
+<br/>
+<br/>
+class CreateUnknowns < ActiveRecord::Migration<br/>
+  def self.up<br/>
+    # EVERYTHING SHOULD BE DELETED<br/>
+    #create_table :unknowns do |t|<br/>
+<br/>
+     # t.timestamps<br/>
+    #end<br/>
+  end<br/>
+<br/>
+  def self.down<br/>
+    #drop_table :unknowns<br/>
+  end<br/>
+end<br/>
+<br/>
+<br/>
 <h2>How to use</h2>
 <h2>Dependencies</h2>
 <p>dependencies.................</p>
