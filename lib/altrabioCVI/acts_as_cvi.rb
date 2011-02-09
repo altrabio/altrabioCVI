@@ -5,10 +5,6 @@ module Cvi
     base.send :extend, ClassMethods
   end
 
-
-#A AMELIORER PB framework development, production, test
-
-
  
 #------------------------------------------------------------------------------------------------------------------------ 
 #
@@ -20,8 +16,7 @@ module Cvi
     # any method placed here will apply to classes
     
 
-    def acts_as_cvi(options = {}) 
-
+    def acts_as_cvi(options = {}) #options hash see below
         
         
         db_type_field = (options[:db_type_field] || :type).to_s         #:db_type_field = option for setting the inheritance columns, default value = 'type'
@@ -30,18 +25,63 @@ module Cvi
         set_inheritance_column "#{db_type_field}"
 
         if(self.superclass!=ActiveRecord::Base)
+          #------------------------------------------------------------------------------------------------------------------------ 
+          #
+          #             methods that will be used for the mother class
+          #
+          #------------------------------------------------------------------------------------------------------------------------
           puts "acts_as_cvi -> NON mother class"
           set_table_name "view_#{table_name}"
           aaa=create_class_part_of self# these 2 lines are there for the creation of class PartOf (which is a class of the current class)
-          self.const_set("PartOf",aaa) # it will stand for the self table of the current class
-          set_table="#{table_name}"
+          self.const_set("PartOf",aaa) # it will stand for the write table of the current class            
+          
+          
+          
+           def self.delete(id) #overrides delete to delete every pieces of information about this record wherever it may be stored
+              if RAILS_ENV == 'development' 
+                puts "delete de classe = #{self.name}"
+              end
+              return self.delete(id) if self == self.mother_class #if the class of the record is the mother class then call with the id of the object
+                                                                #if the class of the record is not the mother class then 
+              if RAILS_ENV == 'development' 
+                puts "2->delete de classe = #{self.name}"
+              end
+
+              if self.respond_to?('has_a_part_of?') # eventually delete pieces of information stored in the table associated to the class of the object (if there is such a table)
+                if self.has_a_part_of?  && (self.superclass==self.mother_class || self::PartOf!=self.superclass::PartOf) #SHOW TO LB implique moins de SQL
+                  if RAILS_ENV == 'development' 
+                    puts("has a part of")
+                  end
+                  self::PartOf.delete(id)
+                else
+                  if RAILS_ENV == 'development' 
+                    puts "no part of" 
+                  end
+                end 
+              end
+
+              if RAILS_ENV == 'development' 
+                puts "3->delete de classe = #{self.name}"
+              end
+
+              self.superclass.delete(id)                     # call the delete method associated to the super class of the current class with the id the object
+           end  #A AMELIORER
+            
+          
+              send :include, InstanceMethods1              
         else
-          puts "acts_as_cvi -> MOTHER class"
-        
-        
-
-
-          def mother_class #give the mother class : the highest inherited class after ActiveRecord 
+          #------------------------------------------------------------------------------------------------------------------------ 
+          #
+          #             methods that will be used for the non mother class
+          #
+          #------------------------------------------------------------------------------------------------------------------------
+          after_save :updatetype
+          if RAILS_ENV == 'development' 
+            puts "acts_as_cvi -> MOTHER class"        
+          end
+          set_table_name="#{table_name}"     
+          
+          def self.mother_class #returns the mother class (the highest inherited class before ActiveRecord) 
            if(self.superclass!=ActiveRecord::Base)  
               self.superclass.mother_class
             else
@@ -50,37 +90,41 @@ module Cvi
           end 
 
 
-          def find(*args) #override find to get more informations        
+
+          def self.find(*args) #overrides find to get more informations   
+            if RAILS_ENV == 'development' 
+              puts"a#{self.name}"  
+            end   
             tuples = super
+            if RAILS_ENV == 'development' 
+              puts"b"     
+            end
             return tuples if tuples.kind_of?(Array) # in case of several tuples just return the tuples as they are
             #tuples.reload2                         # reload2 is defined in lib/activerecord_ext.rb
             tuples.class.where(tuples.class[:id].eq(tuples.id))[0]  # in case of only one tuple return a reloaded tuple  based on the class of this tuple
-                                                                  # this imply a "full" load of the tuple
-                                                                  # AVOIR AVEC LB peut être préfère t il laisser reload2                                                        
+                                                                    # this imply a "full" load of the tuple
+                                                                    # A VOIR AVEC LB peut être préfère t il laisser reload2                                                        
           end
 
 
-          def delete(id) #override delete to delete every pieces of information bout this record wherever it may be stored
-            puts "delete de classe = #{self.name}"
-            return super if self == self.mother_class #if the class of the record is the mother class then call with the id of the object
- 
-                                                          #if the class of the record is not the mother class then 
-
-            if self.respond_to?('has_a_part_of') # eventually delete pieces of information stored in the table associated to the class of the object (if there is such a table)
-              self::PartOf.delete(id)  if self.has_a_part_of?  
+          def self.delete_all #contrary to destroy_all this is useful to override this method : In fact destroy_all will explicitly call a destroy method on each object
+                              #whereas delete_all doesn't and only call a specific SQL request
+                              # (to be even more precise delete explictly call delete_all with special conditions )
+            if RAILS_ENV == 'development' 
+              puts "ici0"
             end
-            self.superclass.delete(id)                     # call the delete method associated to the super class of the current class with the id the object
-          end  #A AMELIORER
-
-
-          def delete_all
-           # implementation plus rapide que un par un ? A MODIFIER
-           self.all.each{|o| o.delete } #call delete method fo each object of the class
+            self.all.each{|o| o.delete } #call delete method for each instance of the class
+            if RAILS_ENV == 'development' 
+              puts "ici1"
+            end
           end
-
-          send :include, InstanceMethods     
-        
+          
+      
+                   
+          send :include, InstanceMethods
         end
+        
+        
 
     end
   
@@ -89,125 +133,204 @@ module Cvi
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
  
+ 
+ 
+ 
+ 
 #------------------------------------------------------------------------------------------------------------------------
 # 
-#                 methods that will be used for the instance
+#                 methods that will be used for the instances of the Non Mother Classes
 #
 #------------------------------------------------------------------------------------------------------------------------ 
+
+    module InstanceMethods1
  
-  module InstanceMethods
-  # any method placed here will apply to instances
-
-  def save
-#    return super if self.class == self.class.mother_class #if the class of the instance is the mother class then call A COMPLETER with the id of the instance
-    if self.class == self.class.mother_class #if the class of the instance is the mother class then call A COMPLETER with the id of the instance
-      ret=super
+  
+      def destroy
+          if RAILS_ENV == 'development' 
+              puts "1->destroy de classe = #{self.name}"
+          end
       
-      #A AMELIORER le code ci dessous évite d'avoir des nil pour le champ type de la motherclass dans la table de la motherclass mais génère un update de trop !
-      sql = "UPDATE #{self.class.mother_class.table_name} SET type = '#{self.class.to_s}' WHERE id = #{self.id}"
-      puts "SQL : #{sql}"
-      self.connection.execute(sql)
-      
-      return ret 
-    end
-    attributes_for_super = self.attributes.select{|key,value| self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that also belong to its superclass 
-    attributes_for_part_of = self.attributes.select{|key,value| !self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that do not belong to its superclass
-                                                                                                                    # these pieces of information should be stored in the table associated to the class of the instance
-    herited = self.class.superclass.new(attributes_for_super)   #create a new instance of the superclass of the considered instance (self) 
-    if(!new_record?)
-        herited.swap_new_record
-        herited.id = self.id
-    end
-    
-    puts("herited save #{herited.class}")
-    herited_saved = herited.saveBis # save the new instance (by calling its save method)
-    
-    if(herited_saved==false) 
-      alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
-    end
-    
-    part_of_saved=true
-    if( ! attributes_for_part_of.empty? ) #if there are some piecesof information to save in the table associated to the class of the cosidered instance
-      part_of = self.class::PartOf.new(attributes_for_part_of) #A COMPLETER création nouvel objet partof renseigné
-      part_of.id = herited.id
-      
-      if(!new_record?)
-        part_of.swap_new_record
-      end
+          xxx=self.class
+          qqq=xxx
+            
+          while xxx!=ActiveRecord::Base do
+            puts "1->classe = #{xxx}"
+              if xxx.respond_to?('has_a_part_of?') # eventually delete pieces of information stored in the table associated to the class of the object (if there is such a table)
+          
+                if xxx.has_a_part_of?  && (xxx.superclass==xxx.mother_class || xxx::PartOf!=xxx.superclass::PartOf)
+            
+                    if RAILS_ENV == 'development' 
+                      puts("has a part of")
+                    end
+                    puts "1->partofdest = #{xxx}"
+                  #xxx::PartOf.destroy(self.id)
+                  oo=xxx::PartOf.find(self.id)
+                  puts "1->dest = #{oo.destroy}"
+          
+                else
+            
+                    if RAILS_ENV == 'development' 
+                    puts "no part of" 
+                    end
+          
+                end#partof
+            end #respond
+            qqq=xxx
+            xxx=xxx.superclass
         
-      part_of_saved = part_of.save
-      if(part_of_saved==false) 
-        alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
-      end
-     end
+          end #while
+      
+          puts "2->classe = #{qqq.name}"          
+          #to be able to destroy  the mother_class need to alter the type of the record into mother_class type
+          sql = "UPDATE #{self.class.mother_class.table_name} SET #{self.class.inheritance_column} = '#{self.class.mother_class.to_s}' WHERE id = #{self.id}"
+          self.connection.execute(sql)
+          puts"z"
+      
+          qqq.destroy(self.id)
+      end  #A AMELIORER
+ 
+
+      def save
 
     
-    self.id = herited.id
-    puts "x : "
-    sql = "UPDATE #{self.class.mother_class.table_name} SET type = '#{self.class.to_s}' WHERE id = #{self.id}"
-    puts "SQL : #{sql}"
-    self.connection.execute(sql)
-    return herited_saved && part_of_saved 
-  end
-
-
-   def saveBis #Arnaque pour éviter 
-
-      return save if self.class == self.class.mother_class #if the class of the instance is the mother class then call A COMPLETER with the id of the instance
-
-      attributes_for_super = self.attributes.select{|key,value| self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that also belong to its superclass 
-      attributes_for_part_of = self.attributes.select{|key,value| !self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that do not belong to its superclass
-                                                                                                                      # these pieces of information should be stored in the table associated to the class of the instance
-      herited = self.class.superclass.new(attributes_for_super)   #create a new instance of the superclass of the considered instance (self) 
-
-      if(!new_record?)
-          herited.swap_new_record
-          herited.id = self.id
-      end
-
-      herited_saved = herited.saveBis # save the new instance (by calling its save method)
-
-      if(herited_saved==false) 
-        alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
-      end
-
-      part_of_saved=true
-      if( ! attributes_for_part_of.empty? ) #if there are some piecesof information to save in the table associated to the class of the cosidered instance
-        part_of = self.class::PartOf.new(attributes_for_part_of) #A COMPLETER création nouvel objet partof renseigné
-        part_of.id = herited.id
-
+        attributes_for_super = self.attributes.select{|key,value| self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that also belong to its superclass 
+        attributes_for_part_of = self.attributes.select{|key,value| !self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that do not belong to its superclass
+                                                                                                                        # these pieces of information should be stored in the table associated to the class of the instance
+        herited = self.class.superclass.new(attributes_for_super)   #create a new instance of the superclass of the considered instance (self) 
         if(!new_record?)
-          part_of.swap_new_record
+            herited.swap_new_record
+            herited.id = self.id
         end
 
-        part_of_saved = part_of.save
-        if(part_of_saved==false) 
+        if(herited.class==herited.class.mother_class)
+          herited_saved = herited.save # save the new instance (by calling its save method)      
+        else
+          herited_saved = herited.saveBis # save the new instance (by calling its save method)      
+        end
+    
+        if(herited_saved==false) 
           alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
         end
-       end
 
-      self.id = herited.id
+        part_of_saved=true
+        if( ! attributes_for_part_of.empty? ) #if there are some piecesof information to save in the table associated to the class of the cosidered instance
+          part_of = self.class::PartOf.new(attributes_for_part_of) #A COMPLETER création nouvel objet partof renseigné
+          part_of.id = herited.id
 
-      return herited_saved && part_of_saved 
+          if(!new_record?)
+            part_of.swap_new_record
+          end
+
+          part_of_saved = part_of.save
+          if(part_of_saved==false) 
+            alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
+          end
+         end
+
+
+        self.id = herited.id
+    
+        sql = "UPDATE #{self.class.mother_class.table_name} SET #{self.class.inheritance_column} = '#{self.class.to_s}' WHERE id = #{self.id}"
+        if RAILS_ENV == 'development' 
+          puts "SQL : #{sql}"
+        end
+        self.connection.execute(sql)
+        return herited_saved && part_of_saved
+      end
+
+
+
+      def saveBis
+
+
+        attributes_for_super = self.attributes.select{|key,value| self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that also belong to its superclass 
+        attributes_for_part_of = self.attributes.select{|key,value| !self.class.superclass.column_names.include?(key) } #get the attributes of the class of the instance that do not belong to its superclass
+                                                                                                                        # these pieces of information should be stored in the table associated to the class of the instance
+        herited = self.class.superclass.new(attributes_for_super)   #create a new instance of the superclass of the considered instance (self) 
+        if(!new_record?)
+            herited.swap_new_record
+            herited.id = self.id
+        end
+
+
+        if(herited.class==herited.class.mother_class)
+            herited_saved = herited.save # save the new instance (by calling its save method)      
+        else
+            herited_saved = herited.saveBis # save the new instance (by calling its save method)      
+        end
+
+        if(herited_saved==false) 
+          alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
+        end
+
+        part_of_saved=true
+        if( ! attributes_for_part_of.empty? ) #if there are some piecesof information to save in the table associated to the class of the cosidered instance
+          part_of = self.class::PartOf.new(attributes_for_part_of) #A COMPLETER création nouvel objet partof renseigné
+          part_of.id = herited.id
+
+          if(!new_record?)
+            part_of.swap_new_record
+          end
+
+          part_of_saved = part_of.save
+          if(part_of_saved==false) 
+            alert('please contact altrabio use the following mail : altrabio...altrabio.com') # que faire si herited_saved vaut false ? A VOIR
+          end
+         end
+
+
+        self.id = herited.id
+
+        return herited_saved && part_of_saved
+      end
+
+      def delete   #call the class delete method with the id of the instance
+         if RAILS_ENV == 'development' 
+           puts("1-> delete d'instance #{self.id} la classe est #{self.class.name}")
+         end
+         self.class.delete( self.id)
+
+         if RAILS_ENV == 'development' 
+           puts("wl1")
+         end
+     end
+
     end
-    
-    
-     
-   
-   
-   def delete   #call the class delete method with the id of the instance
-     self.class.delete( self.id)
-   end
-   
-   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    #------------------------------------------------------------------------------------------------------------------------
+    # 
+    #                 methods that will be used for the instances of the Mother Class
+    #
+    #------------------------------------------------------------------------------------------------------------------------ 
+ 
+    module InstanceMethods
+ 
 
-  end
+        def updatetype
+          puts"eee"
+          sql = "UPDATE #{self.class.mother_class.table_name} SET #{self.class.inheritance_column} = '#{self.class.to_s}' WHERE id = #{self.id}"
+          self.connection.execute(sql)
+          puts"#{sql}"      
+        end
+  
+  
+   
+  
+    end  
+  
+  
+  
+  
   
 end  
-  
-  
-  
-  
-  
-  
   ActiveRecord::Base.send :include, Cvi 

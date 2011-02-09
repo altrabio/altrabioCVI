@@ -1,0 +1,23 @@
+# vendor/plugins/yaffle/test/database.yml
+ 
+sqlite:
+  :adapter: sqlite
+  :dbfile: vendor/plugins/yaffle/test/altrabioCVI_plugin.sqlite.db
+ 
+sqlite3:
+  :adapter: sqlite3
+  :dbfile: vendor/plugins/yaffle/test/altrabioCVI_plugin.sqlite3.db
+ 
+postgresql:
+  :adapter: postgresql
+  :username: postgres
+  :password: post
+  :database: altrabioCVI_plugin_test
+  :min_messages: ERROR
+ 
+mysql:
+  :adapter: mysql
+  :host: localhost
+  :username: mysql
+  :password: mysql
+  :database: altrabioCVI_plugin_test

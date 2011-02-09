@@ -1,0 +1,9 @@
+TODO tags 
+
+A COMPLETER
+A TESTER 
+A VOIR
+A AMELIORER PB environnement développement, production, test
+A AMELIORER PB transaction
+
+
