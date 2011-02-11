@@ -27,10 +27,11 @@ module Cvi
         if(self.superclass!=ActiveRecord::Base)
           #------------------------------------------------------------------------------------------------------------------------ 
           #
-          #             methods that will be used for the mother class
+          #             methods that will be used for the NON mother class
           #
           #------------------------------------------------------------------------------------------------------------------------
           puts "acts_as_cvi -> NON mother class"
+    
           set_table_name "view_#{table_name}"
           aaa=create_class_part_of self# these 2 lines are there for the creation of class PartOf (which is a class of the current class)
           self.const_set("PartOf",aaa) # it will stand for the write table of the current class            
@@ -72,10 +73,12 @@ module Cvi
         else
           #------------------------------------------------------------------------------------------------------------------------ 
           #
-          #             methods that will be used for the non mother class
+          #             methods that will be used for the mother class
           #
           #------------------------------------------------------------------------------------------------------------------------
           after_save :updatetype
+         
+          
           if RAILS_ENV == 'development' 
             puts "acts_as_cvi -> MOTHER class"        
           end
@@ -145,52 +148,6 @@ module Cvi
 
     module InstanceMethods1
  
-  
-      def destroy
-          if RAILS_ENV == 'development' 
-              puts "1->destroy de classe = #{self.name}"
-          end
-      
-          xxx=self.class
-          qqq=xxx
-            
-          while xxx!=ActiveRecord::Base do
-            puts "1->classe = #{xxx}"
-              if xxx.respond_to?('has_a_part_of?') # eventually delete pieces of information stored in the table associated to the class of the object (if there is such a table)
-          
-                if xxx.has_a_part_of?  && (xxx.superclass==xxx.mother_class || xxx::PartOf!=xxx.superclass::PartOf)
-            
-                    if RAILS_ENV == 'development' 
-                      puts("has a part of")
-                    end
-                    puts "1->partofdest = #{xxx}"
-                  #xxx::PartOf.destroy(self.id)
-                  oo=xxx::PartOf.find(self.id)
-                  puts "1->dest = #{oo.destroy}"
-          
-                else
-            
-                    if RAILS_ENV == 'development' 
-                    puts "no part of" 
-                    end
-          
-                end#partof
-            end #respond
-            qqq=xxx
-            xxx=xxx.superclass
-        
-          end #while
-      
-          puts "2->classe = #{qqq.name}"          
-          #to be able to destroy  the mother_class need to alter the type of the record into mother_class type
-          sql = "UPDATE #{self.class.mother_class.table_name} SET #{self.class.inheritance_column} = '#{self.class.mother_class.to_s}' WHERE id = #{self.id}"
-          self.connection.execute(sql)
-          puts"z"
-      
-          qqq.destroy(self.id)
-      end  #A AMELIORER
- 
-
       def save
 
     
@@ -316,14 +273,53 @@ module Cvi
     module InstanceMethods
  
 
-        def updatetype
-          puts"eee"
+      def updatetype        
           sql = "UPDATE #{self.class.mother_class.table_name} SET #{self.class.inheritance_column} = '#{self.class.to_s}' WHERE id = #{self.id}"
           self.connection.execute(sql)
           puts"#{sql}"      
-        end
+      end
   
+      def destroy
+          super
+          if self.class.respond_to?('has_a_part_of?')
+            qdestroy
+          else
+            return self
+          end
+      end
   
+      def qdestroy
+          xxx=self.class
+          qqq=xxx
+
+          while xxx!=ActiveRecord::Base do
+ 
+            if xxx.respond_to?('has_a_part_of?') # eventually delete pieces of information stored in the write tables associated to the current xxx class for the object (if there is such a table)
+
+              if (xxx.superclass==xxx.mother_class || xxx::PartOf!=xxx.superclass::PartOf)
+
+                puts "partof for class = #{xxx.name}"
+                xxx::PartOf.destroy(self.id)
+                #oo=xxx::PartOf.find(self.id)
+                #oo.destroy
+
+              else           
+                  puts "no part of for class = #{xxx.name}"                 
+              end#partof
+          end #respond
+          
+          qqq=xxx
+          xxx=xxx.superclass
+
+          end #while
+
+          puts "#{qqq.name} should be the mother class"          
+          qqq.delete(self.id) #delete information into the table of the mother class
+
+          return self
+      end  
+   
+        
    
   
     end  

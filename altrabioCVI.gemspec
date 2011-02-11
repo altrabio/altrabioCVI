@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["L. Buffat & P.E. Jouve"]
-  s.date = %q{2011-02-09}
+  s.date = %q{2011-02-11}
   s.description = %q{This is a Work in Progress !
   Currently no documentation & tests, use it at your own risk...
   You will find here a solution that extends Single Table Inheritance & Class Table Inheritance.
