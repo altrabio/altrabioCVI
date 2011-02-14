@@ -700,7 +700,7 @@ href="http://testaltrabio1.github.com/altrabioCVI/index.html#classhierarchy">see
 	tables : </SPAN></SPAN></FONT></FONT></FONT>
 	</P>
 	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">-Table1
-	(we call it medias through the rest of this post) which is
+	(we call it 'medias' through the rest of this post) which is
 	associated to the Media class node for storing 'price' and 'name'
 	attributes (for Media class and all its derivated classes : Audio,
 	Mp3, Video, Book, Novel, Dictionary, Pocket Dictionary, Unknown) </SPAN></SPAN></FONT></FONT></FONT>
@@ -752,7 +752,8 @@ href="http://testaltrabio1.github.com/altrabioCVI/index.html#classhierarchy">see
 Solution Philosophy at a glance</B></FONT></FONT></FONT></P>
 <P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">The
 philosophy used to implement this solution is the following, for each
-node of the class hierarchy (see it here) (does not depend on the
+node of the class hierarchy (<a
+href="http://testaltrabio1.github.com/altrabioCVI/index.html#classhierarchy">see it here</a>) (does not depend on the
 fact that it has or not any specific attribute) we would like to use
 ActiveRecord facilities to manipulate it (this means using
 ActiveRecord facilities to save an object, update an object, load an
@@ -760,7 +761,8 @@ object, read an object's attributes, destroy an object...). Using
 classically ActiveRecords would imply to use a specific table for
 each class, yet this would not respect the constraints required
 related to the storage. (this would not fit with our database schema
-constraints defined before, see it here). </SPAN></SPAN></FONT></FONT></FONT>
+constraints defined before, <a
+href="http://testaltrabio1.github.com/altrabioCVI/index.html#databaseschema">see it here</a>). </SPAN></SPAN></FONT></FONT></FONT>
 </P>
 <P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">So
 what we propose here is just to have a mechanism that fake the
