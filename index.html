@@ -807,7 +807,7 @@ See database schema here </a>   </B>
 
 
 </FONT></FONT></FONT></P>
-<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-style: normal; line-height: 100%">
+<P id="databaseview" ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-style: normal; line-height: 100%">
 <FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><B>Database
 Views </B></FONT></FONT></FONT>
 </P>
@@ -846,8 +846,8 @@ should follow the next steps to use <B>CITIEsForRails :</B> </FONT></FONT></FONT
 </P>
 <OL>
 	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">Model
-	your class inheritance hierarchy (see for instance our example TODO
-	ajouter lien)</SPAN></SPAN></FONT></FONT></FONT></P>
+	your class inheritance hierarchy (<a
+href="http://testaltrabio1.github.com/altrabioCVI/index.html#classhierarchy">see for instance our example</a>)</SPAN></SPAN></FONT></FONT></FONT></P>
 	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">Once
 	your class inheritance hierarchy is modeled : determine what we will
 	call the role of each class. There are 3 kind of roles : </SPAN></SPAN></FONT></FONT></FONT>
@@ -878,8 +878,8 @@ should follow the next steps to use <B>CITIEsForRails :</B> </FONT></FONT></FONT
 <OL START=3>
 	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">Once
 	roles are determined : determine the database schema (it is better
-	if this schema is such that it avoids duplication (see for instance
-	our example TODO ajouter lien). Note that the table associated to
+	if this schema is such that it avoids duplication (<a
+href="http://testaltrabio1.github.com/altrabioCVI/index.html#databaseschema">see for instance our example</a>). Note that the table associated to
 	the mother class requires one extra columns that we will call
 	inheritance_column (our solution uses notably Rails Single Table
 	Inheritance facility). (To sum up : the “mother class”
@@ -915,7 +915,8 @@ should follow the next steps to use <B>CITIEsForRails :</B> </FONT></FONT></FONT
 <OL START=4>
 	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">Determine
 	views that are needed (one per ”class with specific attribute(s)”)
-	(see for instance our example TODO ajouter lien) . Such views may be
+	(<a
+href="http://testaltrabio1.github.com/altrabioCVI/index.html#databaseview">see for instance our example</a>) . Such views may be
 	created thanks to the provided function CreateTheViewForCVI(class)
 	or dropped with the provided function DropTheViewForCVI(class) . </SPAN></SPAN></FONT></FONT></FONT><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><I><SPAN STYLE="font-weight: normal">For
 	our example, this mean that we need 5 views.</SPAN></I></FONT></FONT></FONT></P>
