@@ -682,10 +682,9 @@ A Full Featured Solution</B></FONT></FONT></FONT></P>
 	solution is firstly based on Ruby's class inheritance. For our
 	example, the inheritance hierachy is the one that a programmer would
 	expect (<a
-href="http://testaltrabio1.github.com/altrabioCVI/index.html#classhierarchy">
-see it here </a>).  This means that if you have defined some instance
+href="http://testaltrabio1.github.com/altrabioCVI/index.html#classhierarchy">see it here</a>).  This means that if you have defined some instance
 	methods/variables or class methods/variables in a superclass you can
-	have a natural access to it. This also means that a real is_a
+	have a natural access to it. This also means that a real "is_a"
 	relationship is used and that multi level inheritance hierarchy can
 	be modeled. This feature is not included in any other solution.</SPAN></SPAN></FONT></FONT></FONT></P>
 	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><B><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">Efficient
@@ -695,42 +694,42 @@ see it here </a>).  This means that if you have defined some instance
 	efficiently store attributes of modeled classes, the database schema
 	used respects the class inheritance. The database schema is such
 	that no information is stored twice. To do so we create a table for
-	each node of the class hierarchy such that the node has specific
-	attribute (attributes that are not included into its superclass). 
+	each node of the class hierarchy such that the node has at least one specific
+	attribute (specific attributes of a class are attributes that are not included into its superclass). 
 	For our example that means that we have a schema with the following
 	tables : </SPAN></SPAN></FONT></FONT></FONT>
 	</P>
-	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">Table1
+	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; line-height: 100%"><FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal">-Table1
 	(we call it medias through the rest of this post) which is
 	associated to the Media class node for storing 'price' and 'name'
 	attributes (for Media class and all its derivated classes : Audio,
 	Mp3, Video, Book, Novel, Dictionary, Pocket Dictionary, Unknown) </SPAN></SPAN></FONT></FONT></FONT>
 	</P>
 	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-weight: normal; line-height: 100%">
-	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">Table2
+	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">-Table2
 	 (we call it 'audios' through the rest of this post) which is
 	associated to the Audio class node for storing 'title' and 'genre'
 	attributes (for Audio class and all its derivated class Mp3)</SPAN></FONT></FONT></FONT></P>
 	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-weight: normal; line-height: 100%">
-	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">Table3
+	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">-Table3
 	 (we call it 'videos' through the rest of this post) which is
 	associated to the Video class node for storing 'title' and 'genre'
 	attributes (for Video class)</SPAN></FONT></FONT></FONT></P>
 	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-weight: normal; line-height: 100%">
-	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">Table4
+	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">-Table4
 	 (we call it 'tablebooks' through the rest of this post) which is
 	associated to the Book class node for storing 'author' and 'title'
 	attributes (for Book class and all its derivated classes : Novel,
 	Dictionary, Pocket Dictionary, Unknown) </SPAN></FONT></FONT></FONT>
 	</P>
 	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-weight: normal; line-height: 100%">
-	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">Table5
+	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">-Table5
 	 (we call it 'novels' through the rest of this post) which is
 	associated to the Novel class node for storing 'summary' attribute
 	(for Novel class) </SPAN></FONT></FONT></FONT>
 	</P>
 	<P ALIGN=LEFT STYLE="margin-bottom: 0.74cm; font-weight: normal; line-height: 100%">
-	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">Table6
+	<FONT COLOR="#262626"><FONT FACE="Optima-Regular, sans-serif"><FONT SIZE=3><SPAN STYLE="font-style: normal">-Table6
 	 (we call it 'dictionaries' through the rest of this post) which is
 	associated to the Dictionary class node for storing 'language1' and
 	'language2' attributes (for Dictionary class and all its derivated
